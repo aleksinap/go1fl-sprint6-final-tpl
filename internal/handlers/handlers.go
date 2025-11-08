@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/Yandex-Practicum/go1fl-sprint6-final/internal/service"
-	"github.com/Yandex-Practicum/go1fl-sprint6-final/pkg/morse"
 )
 
 func HandleMain(w http.ResponseWriter, r *http.Request) {
@@ -26,19 +25,7 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 
 	file, handler, err := r.FormFile("myFile")
 	if err != nil {
-
-		text := r.FormValue("text")
-		if text == "" {
-			http.Error(w, "no input provided", http.StatusBadRequest)
-			return
-		}
-		os.WriteFile("random.txt", []byte(text), 0755)
-		morse := morse.ToMorse(text)
-		os.WriteFile("morse.txt", []byte(morse), 0755)
-
-		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(morse))
+		http.Error(w, "File upload failed", http.StatusInternalServerError)
 		return
 	}
 	defer file.Close()
@@ -53,7 +40,7 @@ func HandleUpload(w http.ResponseWriter, r *http.Request) {
 
 	err = os.WriteFile(time.Now().UTC().String(), data, 0755)
 	if err != nil {
-		http.Error(w, "file write failure", http.StatusInternalServerError)
+		http.Error(w, "File write failure", http.StatusInternalServerError)
 		return
 	}
 
